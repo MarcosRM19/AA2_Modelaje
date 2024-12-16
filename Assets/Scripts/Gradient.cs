@@ -31,13 +31,26 @@ public class Gradient : MonoBehaviour
     private Vector3 D5; 
     private Vector3 D6; 
 
-    public float alpha = 1f;
+    public float alpha;
+    public float initAlpha;
 
     private Vector6 theta; 
 
     public float tolerance = 1f;
 
-    private Vector6 gradient; 
+    private Vector6 gradient;
+
+    private bool canMove;
+    private Vector3[] initPosition;
+    private bool isResetting = false; 
+    private float resetProgress = 0f;
+    public float resetDuration = 1f;
+
+    public float maxTime;
+    private float time;
+
+    public ArmController armController;
+    public bool firtsArm;
 
     void Start()
     {
@@ -58,25 +71,52 @@ public class Gradient : MonoBehaviour
         InitializeLineRenderer(lineRender4);
         InitializeLineRenderer(lineRender5);
         InitializeLineRenderer(lineRenderEnd);
+
+        initPosition = new Vector3[6];
+        initPosition[0] = Joint1.position;
+        initPosition[1] = Joint2.position;
+        initPosition[2] = Joint3.position;
+        initPosition[3] = Joint4.position;
+        initPosition[4] = Joint5.position;
+        initPosition[5] = endFactor.position;
+
+        initAlpha = alpha;
+        time = 0;
     }
 
     void Update()
     {
-        if (costFunction > tolerance)
+        if (canMove)
         {
-            gradient = GetGradient(theta);
-            theta -= alpha * gradient;
-            Vector3[] newPosition = endFactorFunction(theta);
+            if (costFunction > tolerance)
+            {
+                gradient = GetGradient(theta);
+                theta -= alpha * gradient;
+                Vector3[] newPosition = endFactorFunction(theta);
 
-            Joint1.position = newPosition[0];
-            Joint2.position = newPosition[1];
-            Joint3.position = newPosition[2]; 
-            Joint4.position = newPosition[3]; 
-            Joint5.position = newPosition[4]; 
-            endFactor.position = newPosition[5];
+                Joint1.position = newPosition[0];
+                Joint2.position = newPosition[1];
+                Joint3.position = newPosition[2];
+                Joint4.position = newPosition[3];
+                Joint5.position = newPosition[4];
+                endFactor.position = newPosition[5];
+            }
+
+            costFunction = lossCostFunction(theta);
+
+            time += Time.deltaTime;
+
+            if(time > maxTime) 
+            {
+                canMove = false;
+                armController.ChangeArmMovement(firtsArm);
+                StartReset();
+            }
         }
-
-        costFunction = lossCostFunction(theta);
+        else
+        {
+            ResetToInitialPositions();
+        }
         UpdateVisualLinks();
     }
 
@@ -183,6 +223,40 @@ public class Gradient : MonoBehaviour
 
         lineRenderEnd.SetPosition(0, Joint5.position);
         lineRenderEnd.SetPosition(1, endFactor.position);
+    }
+
+    private void ResetToInitialPositions()
+    {
+        resetProgress += Time.deltaTime / resetDuration;
+
+        Joint1.position = Vector3.Lerp(Joint1.position, initPosition[0], resetProgress);
+        Joint2.position = Vector3.Lerp(Joint2.position, initPosition[1], resetProgress);
+        Joint3.position = Vector3.Lerp(Joint3.position, initPosition[2], resetProgress);
+        Joint4.position = Vector3.Lerp(Joint4.position, initPosition[3], resetProgress);
+        Joint5.position = Vector3.Lerp(Joint5.position, initPosition[4], resetProgress);
+        endFactor.position = Vector3.Lerp(endFactor.position, initPosition[5], resetProgress);
+
+        if (resetProgress >= 1f)
+        {
+            isResetting = false;
+        }
+    }
+    public void SetCanMove(bool state)
+    {
+        canMove = state;
+        if(state == false)
+        {
+            StartReset();
+        }
+    }
+
+    public void StartReset()
+    {
+        time = 0;
+        theta = Vector6.zero;
+        alpha = initAlpha;
+        resetProgress = 0f;
+        isResetting = true;
     }
 }
 
