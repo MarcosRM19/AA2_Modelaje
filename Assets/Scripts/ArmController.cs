@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class ArmController : MonoBehaviour
 {
-    public enum state { OUTDISTANCE, MOVEFIRSTARM, MOVESECONDARM}
+    public enum state { OUTDISTANCE, MOVEARM}
     public state currentState;
 
     public Transform target;
     public float distance;
+
+    public float visionAngle = 45f;
 
     public Gradient[] arms;
     private void Update()
@@ -18,13 +20,9 @@ public class ArmController : MonoBehaviour
             case state.OUTDISTANCE:
                 SetGradientMovement(false);
                 break;
-            case state.MOVEFIRSTARM:
-                arms[1].SetCanMove(false);
-                arms[0].SetCanMove(true);
-                break;
-            case state.MOVESECONDARM:
-                arms[0].SetCanMove(false);
+            case state.MOVEARM:
                 arms[1].SetCanMove(true);
+                arms[0].SetCanMove(true);
                 break;
         }
 
@@ -33,14 +31,24 @@ public class ArmController : MonoBehaviour
 
     private void DetectDistances()
     {
-        if (Vector3.Distance(transform.position, target.position) < distance)
+        if (Vector3.Distance(transform.position, target.position) < distance && IsTargetInVisionAngle())
         {
-            currentState = state.MOVEFIRSTARM;
+            if(currentState == state.OUTDISTANCE) 
+                currentState = state.MOVEARM;
         }
         else
         {
             currentState = state.OUTDISTANCE;
         }
+    }
+
+    private bool IsTargetInVisionAngle()
+    {
+        Vector3 directionToTarget = target.position - transform.position;
+        directionToTarget.y = 0;
+        float angle = Vector3.Angle(transform.forward, directionToTarget);
+
+        return angle <= visionAngle;
     }
 
     private void SetGradientMovement(bool state)
@@ -51,15 +59,5 @@ public class ArmController : MonoBehaviour
         }
     }
 
-    public void ChangeArmMovement(bool _state)
-    {
-        if(_state)
-        {
-            currentState = state.MOVESECONDARM;
-        }
-        else
-        {
-            currentState = state.MOVEFIRSTARM;
-        }
-    }
+    public float GetDistance() { return distance; }
 }
