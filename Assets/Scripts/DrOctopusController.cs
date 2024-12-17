@@ -21,14 +21,15 @@ public class DrOctopusController : MonoBehaviour
     void Update()
     {
         // Get input from WASD or arrow keys
-        float moveZ = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
-        float moveX = Input.GetAxisRaw("Vertical");   // W/S or Up/Down
+        float moveX = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
+        float moveZ = Input.GetAxisRaw("Vertical");   // W/S or Up/Down
 
         // Create movement vector
-        movement = new Vector3(moveX, 0f, moveZ * -1).normalized;
+
+        movement = (transform.right * moveX + transform.forward * moveZ).normalized;
 
         // Move the player
-        transform.Translate(movement * speed * Time.deltaTime, Space.World);
+        rb.AddForce(movement * speed * Time.deltaTime, ForceMode.Impulse);
 
         // Rotate left when the left mouse button is clicked
         if (Input.GetMouseButton(0)) // Left Mouse Button
