@@ -6,6 +6,7 @@ public class DrOctopusController : MonoBehaviour
     [SerializeField] public float rotationSpeed = 100f; // Speed of rotation
     [SerializeField] public float jumpForce = 1f;        // The force applied for the jump
     [SerializeField] private float jumpCooldown = 1f;
+    [SerializeField] private TakeSpiderman[] takeSpiderman;
     private bool canJump = true;
 
     private Vector3 movement;
@@ -47,6 +48,16 @@ public class DrOctopusController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && canJump)
         {
             Jump();
+        }
+
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            takeSpiderman[0].SetStartAnimation();
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            takeSpiderman[1].SetStartAnimation();
         }
     }
 

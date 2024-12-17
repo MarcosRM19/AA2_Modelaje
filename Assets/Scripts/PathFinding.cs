@@ -16,6 +16,8 @@ public class PathFinding : MonoBehaviour
     private float distanceToTarget;
     private float deltaTime;
 
+    public bool canMove;
+
     private void Awake()
     {
         nodeList = new List<Transform>();
@@ -30,6 +32,8 @@ public class PathFinding : MonoBehaviour
         transform.position = nodeList[0].position;
         i = 1;
         currentNode = nodeList[i];
+
+        canMove = true;
     }
 
     private void Update()
@@ -43,17 +47,21 @@ public class PathFinding : MonoBehaviour
 
     private void Seek()
     {
-        Vector3 desiredVelocity = (currentNode.position - transform.position).normalized * maxSpeed;
-
-        Vector3 steering = desiredVelocity - velocity;
-
-        velocity += steering * deltaTime;
-        transform.position += velocity * deltaTime;
-
-        if (velocity.sqrMagnitude > 0.01f)
+        if(canMove)
         {
-            transform.forward = velocity.normalized;
+            Vector3 desiredVelocity = (currentNode.position - transform.position).normalized * maxSpeed;
+
+            Vector3 steering = desiredVelocity - velocity;
+
+            velocity += steering * deltaTime;
+            transform.position += velocity * deltaTime;
+
+            if (velocity.sqrMagnitude > 0.01f)
+            {
+                transform.forward = velocity.normalized;
+            }
         }
+
     }
 
     private void IsNearTarget()

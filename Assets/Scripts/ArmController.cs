@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ArmController : MonoBehaviour
 {
-    public enum state { OUTDISTANCE, MOVEARM}
+    public enum state { OUTDISTANCE, MOVEARM, GRABBED}
     public state currentState;
 
     public Transform target;
@@ -23,6 +23,10 @@ public class ArmController : MonoBehaviour
             case state.MOVEARM:
                 arms[1].SetCanMove(true);
                 arms[0].SetCanMove(true);
+                break;
+            case state.GRABBED:
+                arms[1].SetCanMove(false);
+                arms[0].SetCanMove(false);
                 break;
         }
 
