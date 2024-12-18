@@ -8,8 +8,6 @@ public class DrOctopusController : MonoBehaviour
     [SerializeField] private float jumpCooldown = 1f;
     [SerializeField] private TakeSpiderman[] takeSpiderman;
     [SerializeField] private float mouseSensitivity = 100f; // Rotation sensitivity
-    [SerializeField] private float panSpeed = 20f;          // Panning speed
-    [SerializeField] private float zoomSpeed = 10f;
     private bool canJump = true;
 
     private Vector3 movement;

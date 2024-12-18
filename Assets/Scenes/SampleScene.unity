@@ -865,6 +865,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4411590452948195007, guid: af3fc9647d12e7b499bc3d190a23bc3a,
         type: 3}
+      propertyPath: mouseSensitivity
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411590452948195007, guid: af3fc9647d12e7b499bc3d190a23bc3a,
+        type: 3}
       propertyPath: takeSpiderman.Array.size
       value: 2
       objectReference: {fileID: 0}
