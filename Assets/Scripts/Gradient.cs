@@ -31,13 +31,22 @@ public class Gradient : MonoBehaviour
     private Vector3 D5; 
     private Vector3 D6; 
 
-    public float alpha = 1f;
+    public float alpha;
+    public float initAlpha;
 
     private Vector6 theta; 
 
     public float tolerance = 1f;
 
-    private Vector6 gradient; 
+    private Vector6 gradient;
+
+    private bool canMove;
+    private Vector3[] initPosition;
+    private float resetProgress = 0f;
+    public float resetDuration = 1f;
+
+    public ArmController armController;
+    public bool firtsArm;
 
     void Start()
     {
@@ -58,37 +67,59 @@ public class Gradient : MonoBehaviour
         InitializeLineRenderer(lineRender4);
         InitializeLineRenderer(lineRender5);
         InitializeLineRenderer(lineRenderEnd);
+
+        initPosition = new Vector3[6];
+        initPosition[0] = Joint1.localPosition;
+        initPosition[1] = Joint2.localPosition;
+        initPosition[2] = Joint3.localPosition;
+        initPosition[3] = Joint4.localPosition;
+        initPosition[4] = Joint5.localPosition;
+        initPosition[5] = endFactor.localPosition;
+
+        initAlpha = alpha;
     }
 
     void Update()
     {
-        if (costFunction > tolerance)
+        if (canMove)
         {
-            gradient = GetGradient(theta);
-            theta -= alpha * gradient;
-            Vector3[] newPosition = endFactorFunction(theta);
+            if (costFunction > tolerance)
+            {
+                gradient = GetGradient(theta);
+                theta -= alpha * gradient;
+                Vector3[] newPosition = endFactorFunction(theta);
 
-            Joint1.position = newPosition[0];
-            Joint2.position = newPosition[1];
-            Joint3.position = newPosition[2]; 
-            Joint4.position = newPosition[3]; 
-            Joint5.position = newPosition[4]; 
-            endFactor.position = newPosition[5];
+                float distanceToTarget = Vector3.Distance(armController.transform.position, target.position);
+                float distanceFactor = Mathf.Clamp01(distanceToTarget / armController.GetDistance());
+
+                Joint1.position = Vector3.Lerp(newPosition[0], Joint0.position, 1 - distanceFactor);
+                Joint2.position = Vector3.Lerp(newPosition[1], Joint1.position, 1 - distanceFactor);
+                Joint3.position = Vector3.Lerp(newPosition[2], Joint2.position, 1 - distanceFactor);
+                Joint4.position = Vector3.Lerp(newPosition[3], Joint3.position, 1 - distanceFactor);
+                Joint5.position = Vector3.Lerp(newPosition[4], Joint4.position, 1 - distanceFactor);
+                endFactor.position = Vector3.Lerp(newPosition[5], Joint5.position, 1 - distanceFactor);
+            }
+
+            costFunction = lossCostFunction(theta);
         }
-
-        costFunction = lossCostFunction(theta);
+        else
+        {
+            ResetToInitialPositions();
+        }
         UpdateVisualLinks();
     }
 
     Vector3[] endFactorFunction(Vector6 theta)
     {
+        Quaternion baseRotation = Joint0.rotation;
+
         Quaternion[] q = new Quaternion[6];
-        q[0] = Quaternion.AngleAxis(theta.x, Vector3.up);
+        q[0] = baseRotation * Quaternion.AngleAxis(theta.x, Vector3.up);
         q[1] = Quaternion.AngleAxis(theta.y, Vector3.forward);
         q[2] = Quaternion.AngleAxis(theta.z, Vector3.up);
-        q[3] = Quaternion.AngleAxis(theta.w, Vector3.forward); 
-        q[4] = Quaternion.AngleAxis(theta.v, Vector3.up);     
-        q[5] = Quaternion.AngleAxis(theta.u, Vector3.forward); 
+        q[3] = Quaternion.AngleAxis(theta.w, Vector3.forward);
+        q[4] = Quaternion.AngleAxis(theta.v, Vector3.up);
+        q[5] = Quaternion.AngleAxis(theta.u, Vector3.forward);
 
         Vector3 j1 = Joint0.position + q[0] * q[1] * D1;
         Vector3 j2 = j1 + q[0] * q[1] * q[2] * D2;
@@ -183,6 +214,38 @@ public class Gradient : MonoBehaviour
 
         lineRenderEnd.SetPosition(0, Joint5.position);
         lineRenderEnd.SetPosition(1, endFactor.position);
+    }
+
+    private void ResetToInitialPositions()
+    {
+        resetProgress += Time.deltaTime / resetDuration;
+
+        Joint1.localPosition = Vector3.Lerp(Joint1.localPosition, initPosition[0], resetProgress);
+        Joint2.localPosition = Vector3.Lerp(Joint2.localPosition, initPosition[1], resetProgress);
+        Joint3.localPosition = Vector3.Lerp(Joint3.localPosition, initPosition[2], resetProgress);
+        Joint4.localPosition = Vector3.Lerp(Joint4.localPosition, initPosition[3], resetProgress);
+        Joint5.localPosition = Vector3.Lerp(Joint5.localPosition, initPosition[4], resetProgress);
+        endFactor.localPosition = Vector3.Lerp(endFactor.localPosition, initPosition[5], resetProgress);
+
+        if (resetProgress >= 1f)
+        {
+            resetProgress = 0f;
+        }
+    }
+    public void SetCanMove(bool state)
+    {
+        canMove = state;
+        if(state == false)
+        {
+            StartReset();
+        }
+    }
+
+    public void StartReset()
+    {
+        theta = Vector6.zero;
+        alpha = initAlpha;
+        resetProgress = 0f;
     }
 }
 
