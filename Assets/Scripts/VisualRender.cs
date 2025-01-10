@@ -10,6 +10,9 @@ public class VisualRender : MonoBehaviour
     public Transform Joint3;
     public Transform Joint4;
     public Transform Joint5;
+    public Transform Joint6;
+    public Transform Joint7;
+    public Transform Joint8;
     public Transform endFactor;
 
     public LineRenderer lineRender1;
@@ -17,6 +20,9 @@ public class VisualRender : MonoBehaviour
     public LineRenderer lineRender3;
     public LineRenderer lineRender4;
     public LineRenderer lineRender5;
+    public LineRenderer lineRender6;
+    public LineRenderer lineRender7;
+    public LineRenderer lineRender8;
     public LineRenderer lineRenderEnd;
     void Start()
     {
@@ -25,6 +31,9 @@ public class VisualRender : MonoBehaviour
         InitializeLineRenderer(lineRender3);
         InitializeLineRenderer(lineRender4);
         InitializeLineRenderer(lineRender5);
+        InitializeLineRenderer(lineRender6);
+        InitializeLineRenderer(lineRender7);
+        InitializeLineRenderer(lineRender8);
         InitializeLineRenderer(lineRenderEnd);
     }
 
