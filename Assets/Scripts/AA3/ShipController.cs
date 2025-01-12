@@ -14,7 +14,7 @@ public class ShipController : MonoBehaviour
 
     private void Start()
     {
-        currentState = ShipStates.SEARCHINGDRONE;
+        ChangeState(ShipStates.SEARCHINGDRONE);
     }
 
     public void ChangeState(ShipStates newState)
@@ -22,14 +22,16 @@ public class ShipController : MonoBehaviour
         switch (currentState)
         {
             case ShipStates.SEARCHINGDRONE:
-                Fabrik.enabled = false;
                 break;
             case ShipStates.GRABDRONE:
                 takeTarget.SetStartAnimation(false);
                 break;
             case ShipStates.SEARCHINGHUMAN:
+                Fabrik.SetFindTarget(false);
+                takeTarget.SetStartAnimation(true);
                 break;
             case ShipStates.DROPDRONE:
+                takeTarget.SetStartAnimation(false);
                 break;
         }
 
@@ -37,13 +39,16 @@ public class ShipController : MonoBehaviour
         {
             case ShipStates.SEARCHINGDRONE:
                 Fabrik.enabled = true;
+                Fabrik.SetSatet(ShipStates.GRABDRONE);
                 break;
             case ShipStates.GRABDRONE:
                 takeTarget.SetStartAnimation(true);
+                takeTarget.SetSatet(ShipStates.SEARCHINGHUMAN);
                 break;
             case ShipStates.SEARCHINGHUMAN:
-                Fabrik.enabled = true;
+                takeTarget.SetTarget(targets[0]);
                 Fabrik.SetTarget(targets[0]);
+                Fabrik.SetSatet(ShipStates.DROPDRONE);
                 break;
             case ShipStates.DROPDRONE:
                 break;

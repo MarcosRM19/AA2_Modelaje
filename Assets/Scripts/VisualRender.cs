@@ -70,7 +70,16 @@ public class VisualRender : MonoBehaviour
         lineRender5.SetPosition(0, Joint4.position);
         lineRender5.SetPosition(1, Joint5.position);
 
-        lineRenderEnd.SetPosition(0, Joint5.position);
+        lineRender5.SetPosition(0, Joint5.position);
+        lineRender5.SetPosition(1, Joint6.position);
+
+        lineRender5.SetPosition(0, Joint6.position);
+        lineRender5.SetPosition(1, Joint7.position);
+
+        lineRender5.SetPosition(0, Joint7.position);
+        lineRender5.SetPosition(1, Joint8.position);
+
+        lineRenderEnd.SetPosition(0, Joint8.position);
         lineRenderEnd.SetPosition(1, endFactor.position);
     }
 }

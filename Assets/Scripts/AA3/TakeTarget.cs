@@ -11,6 +11,9 @@ public class TakeTarget : MonoBehaviour
 
     public Transform target;
 
+    private ShipController.ShipStates changeState = ShipController.ShipStates.SEARCHINGDRONE;
+    private bool secondTarget = false;
+
     void Start()
     {
         startAnimation = false;
@@ -21,47 +24,30 @@ public class TakeTarget : MonoBehaviour
     {
         if (startAnimation)
         {
-            if (claw[0].eulerAngles.z <= 315f)
+            if (Vector3.Distance(transform.position, target.transform.position) < 1.5f)
             {
-                if(Vector3.Distance(transform.position, target.transform.position) < 1.5f)
-                {
+                if(!secondTarget) 
                     target.SetParent(transform);
-                    shipController.ChangeState(ShipController.ShipStates.SEARCHINGHUMAN);
-                    return;
-                }
-                shipController.ChangeState(ShipController.ShipStates.SEARCHINGDRONE);
-                StartCoroutine(StopAnimation());
-            }
-
-            for (int i = 0; i < claw.Length; i++)
-            {
-                claw[i].Rotate(0, 0, -0.5f);
+                else
+                    transform.GetChild(0).SetParent(null);
+                shipController.ChangeState(changeState);
             }
         }
-
-        if(!startAnimation) 
-        {
-            if (claw[0].eulerAngles.z >= 345f)
-            {
-                return;
-            }
-
-            for (int i = 0; i < claw.Length; i++)
-            {
-                claw[i].Rotate(0, 0, 0.5f);
-            }
-        }
-    }
-
-    IEnumerator StopAnimation()
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        startAnimation = false;
     }
 
     public void SetStartAnimation(bool state)
     {
         startAnimation = state;
+    }
+
+    public void SetSatet(ShipController.ShipStates state)
+    {
+        changeState = state;
+    }
+
+    public void SetTarget(Transform _target)
+    {
+        secondTarget = true;
+        target = _target;
     }
 }
