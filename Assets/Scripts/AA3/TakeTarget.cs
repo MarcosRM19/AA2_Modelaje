@@ -5,14 +5,13 @@ using UnityEngine;
 
 public class TakeTarget : MonoBehaviour
 {
-    public Transform[] claw;
     private bool startAnimation;
     public ShipController shipController;
 
     public Transform target;
+    public float distance;
 
-    private ShipController.ShipStates changeState = ShipController.ShipStates.SEARCHINGDRONE;
-    private bool secondTarget = false;
+    public ShipController.ShipStates changeState;
 
     void Start()
     {
@@ -24,12 +23,9 @@ public class TakeTarget : MonoBehaviour
     {
         if (startAnimation)
         {
-            if (Vector3.Distance(transform.position, target.transform.position) < 1.5f)
+            if (Vector3.Distance(transform.position, target.transform.position) < distance)
             {
-                if(!secondTarget) 
-                    target.SetParent(transform);
-                else
-                    transform.GetChild(0).SetParent(null);
+                target.SetParent(transform);
                 shipController.ChangeState(changeState);
             }
         }
@@ -38,16 +34,5 @@ public class TakeTarget : MonoBehaviour
     public void SetStartAnimation(bool state)
     {
         startAnimation = state;
-    }
-
-    public void SetSatet(ShipController.ShipStates state)
-    {
-        changeState = state;
-    }
-
-    public void SetTarget(Transform _target)
-    {
-        secondTarget = true;
-        target = _target;
     }
 }

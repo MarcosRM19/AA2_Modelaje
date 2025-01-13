@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
-    public enum ShipStates { SEARCHINGDRONE, GRABDRONE, SEARCHINGHUMAN, DROPDRONE}
+    public enum ShipStates { SEARCHINGDRONE, GRABDRONE, SEARCHINGHUMAN, DROPDRONE, HUMANHASDRONE}
 
     public ShipStates currentState;
     public Transform[] targets;
 
     public Fabrik Fabrik;
-    public TakeTarget takeTarget;
+    public TakeTarget[] takeTarget;
 
     private void Start()
     {
@@ -24,14 +24,13 @@ public class ShipController : MonoBehaviour
             case ShipStates.SEARCHINGDRONE:
                 break;
             case ShipStates.GRABDRONE:
-                takeTarget.SetStartAnimation(false);
                 break;
             case ShipStates.SEARCHINGHUMAN:
                 Fabrik.SetFindTarget(false);
-                takeTarget.SetStartAnimation(true);
                 break;
             case ShipStates.DROPDRONE:
-                takeTarget.SetStartAnimation(false);
+                break;
+            case ShipStates.HUMANHASDRONE:
                 break;
         }
 
@@ -42,15 +41,18 @@ public class ShipController : MonoBehaviour
                 Fabrik.SetSatet(ShipStates.GRABDRONE);
                 break;
             case ShipStates.GRABDRONE:
-                takeTarget.SetStartAnimation(true);
-                takeTarget.SetSatet(ShipStates.SEARCHINGHUMAN);
+                takeTarget[0].SetStartAnimation(true);
                 break;
             case ShipStates.SEARCHINGHUMAN:
-                takeTarget.SetTarget(targets[0]);
+                takeTarget[0].enabled = false;
                 Fabrik.SetTarget(targets[0]);
                 Fabrik.SetSatet(ShipStates.DROPDRONE);
                 break;
             case ShipStates.DROPDRONE:
+                takeTarget[1].SetStartAnimation(true);
+                break;
+            case ShipStates.HUMANHASDRONE:
+                takeTarget[1].enabled = false;
                 break;
         }
 
