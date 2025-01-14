@@ -6,6 +6,7 @@ using UnityEngine;
 public class TakeTarget : MonoBehaviour
 {
     public DroneMovement drone;
+    public Fabrik fabrik;
 
     private bool startAnimation;
     public ShipController shipController;
@@ -27,10 +28,16 @@ public class TakeTarget : MonoBehaviour
         {
             if (Vector3.Distance(transform.position, target.transform.position) < distance)
             {
+                if (drone != null)
+                {
+                    drone.SetCanMove(false);
+                    fabrik.Joints.Add(target);
+                }
+                else
+                    fabrik.Joints.Remove(target);
+
                 target.SetParent(transform);
                 shipController.ChangeState(changeState);
-                if (drone != null)
-                    drone.SetCanMove(false);
             }
         }
     }

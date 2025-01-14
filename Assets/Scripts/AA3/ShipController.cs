@@ -26,7 +26,6 @@ public class ShipController : MonoBehaviour
             case ShipStates.GRABDRONE:
                 break;
             case ShipStates.SEARCHINGHUMAN:
-                Fabrik.SetFindTarget(false);
                 break;
             case ShipStates.DROPDRONE:
                 break;
@@ -53,6 +52,7 @@ public class ShipController : MonoBehaviour
                 break;
             case ShipStates.HUMANHASDRONE:
                 takeTarget[1].enabled = false;
+                Fabrik.SetFindTarget(false);
                 break;
         }
 

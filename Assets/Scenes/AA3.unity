@@ -913,6 +913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drone: {fileID: 1286822625}
+  fabrik: {fileID: 1458220828}
   shipController: {fileID: 1210325832}
   target: {fileID: 1286822624}
   distance: 0.3
@@ -1412,6 +1413,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drone: {fileID: 0}
+  fabrik: {fileID: 1458220828}
   shipController: {fileID: 1210325832}
   target: {fileID: 1286822624}
   distance: 0.3
@@ -1521,7 +1523,7 @@ MonoBehaviour:
   - {fileID: 1696976340}
   - {fileID: 296491976}
   - {fileID: 502160173}
-  maxSpeed: 5
+  maxSpeed: 2
   proximityThreshold: 0.5
 --- !u!1 &1341301022
 GameObject:
@@ -1930,9 +1932,9 @@ MonoBehaviour:
   - {fileID: 1769279390}
   - {fileID: 779824583}
   target: {fileID: 1286822624}
-  tolerance: 0.3
+  tolerance: 0
   maxIterations: 100000
-  distanceDrone: 0.3
+  distanceDrone: 0.5
   shipController: {fileID: 1210325832}
   moveSpeed: 1
   rotationSpeed: 45
