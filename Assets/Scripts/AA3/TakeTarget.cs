@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class TakeTarget : MonoBehaviour
 {
+    public DroneMovement drone;
+
     private bool startAnimation;
     public ShipController shipController;
 
@@ -27,6 +29,8 @@ public class TakeTarget : MonoBehaviour
             {
                 target.SetParent(transform);
                 shipController.ChangeState(changeState);
+                if (drone != null)
+                    drone.SetCanMove(false);
             }
         }
     }
